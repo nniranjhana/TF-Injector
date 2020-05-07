@@ -1,0 +1,26 @@
+# This is a sample YAML file for fault injection configuration for the NN example.
+# The meaning of labels and their allowed values are explained for your choosing.
+
+# "Artifact" specifies the model parameter to inject.
+#  - "0" - Corresponds to W1, the weights of the first hidden layer.
+#  - "1" - Corresponds to B1, the biases of the first hidden layer.
+#  - "2" - Corresponds to W2, the weights of the second hidden layer.
+#  - "3" - Corresponds to B2, the biases of the second hidden layer.
+Artifact: 0
+
+# "Type" specifies the type of fault injector to call.
+#  - "shuffle" - Shuffles the artifact tensor values randomly.
+#  - "mutate"  - Single bit flips in "Bit" position to selected "Amount" of tensor values.
+#  - "zeros"   - Updates chosen "Amount" percentage of artifact tensor values to zeros.
+Type: mutate
+
+# "Amount" specifies the amount of injection in "Artifact".
+#  - Do specify an integer value between 1 and 100.
+#  - When "mutate" type is selected, "Amount" corresponds to the actual number of values.
+#  - When "zeros" type is selected, "Amount" corresponds to the percentage of total values.
+Amount: 1
+
+# "Bit" specifies the bit position to be flipped when "mutate" type is selected.
+#  - Default "N" corresponds to the position being chosen randomly.
+#  - Can specify an integer value between 0 and 31 as "Artifact" tensor values are single precision floats.
+Bit: 30

@@ -124,7 +124,7 @@ for step, (batch_x, batch_y) in enumerate(train_data.take(training_steps), 1):
 pred = neural_net(x_test, is_training=False)
 print("Test accuracy before injections: %f" % accuracy(pred, y_test))
 
-softtensorfi.inject(neural_net)
+x_test = softtensorfi.inject_data(x_test)
 
 pred = neural_net(x_test, is_training=False)
 print("Test accuracy after injections: %f" % accuracy(pred, y_test))

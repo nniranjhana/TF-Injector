@@ -143,7 +143,7 @@ for step, (batch_x, batch_y) in enumerate(train_data.take(training_steps), 1):
 pred = conv_net(x_test)
 print("Test accuracy before injections: %f" % accuracy(pred, y_test))
 
-softtensorfi.inject(conv_net)
+softtensorfi.inject_model(conv_net)
 
 # Test model on validation set.
 pred = conv_net(x_test)

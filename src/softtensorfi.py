@@ -20,9 +20,9 @@ def bitflip(f, pos):
     f = unpack('f', f_)
     return f[0]
 
-class inject():
+class inject_model():
 	def __init__(self, model, confFile="confFiles/sample.yaml"):
-		fiConf = config.config(confFile)
+		fiConf = config.mconfig(confFile)
 		self.Model = model # No more passing or using a session variable in TF v2
 		fiFunc = getattr(self, fiConf["Type"])
 		fiFunc(model, fiConf)
@@ -74,7 +74,29 @@ class inject():
 		v_ = tf.tensor_scatter_nd_update(v, ind_, upd)
 		v.assign(v_)
 
+class inject_data():
+	def __init__(self, x_test, confFile="confFiles/sample.yaml"):
+		x_test = tf.convert_to_tensor(x_test)
+		fiConf = config.dconfig(confFile)
+		fiFunc = getattr(self, fiConf["Type"])
+		fiFunc(x_test, fiConf)
 
+	def shuffle(self, x_test, fiConf):
+		x_test_ = tf.random.shuffle(x_test)
+		return x_test
+
+	def repeat(self, x_test, fiConf):
+		num = x_test.shape[0]
+		rep_sz = fiConf["Amount"]
+		rep_sz = (rep_sz * num) / 100
+		rep_sz = math.floor(rep_sz)
+		sz = num - rep_sz
+		ind = random.sample(range(num), sz)
+		x_test_ = tf.gather(x_test, ind)
+		upd = random.sample(ind, rep_sz)
+		x_ = tf.gather(x_test, upd)
+		x_test_ = tf.concat([x_test_, x_], 0)
+		return x_test_
 
 '''
 Outdated TF v1 test code, kept in case we need to support tests in TF v1 in the future

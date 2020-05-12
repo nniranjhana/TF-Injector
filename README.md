@@ -33,7 +33,7 @@ Following are the installation and usage instructions for a Linux platform.
 
 3. You can navigate to [conf/](https://github.com/nniranjhana/Soft-TensorFI/tree/master/conf) to check out how to set the fault injection configuration for the tests you plan to run.
 
-4. Once you're done, go to [tests/tfv2](https://github.com/nniranjhana/Soft-TensorFI/tree/master/tests/tfv2) and set the sample.yaml file in [tests/tfv2/confFiles/](https://github.com/nniranjhana/Soft-TensorFI/tree/master/tests/tfv2/confFiles). If you are running from the examples in this directory, this is the file that gets picked up.
+4. Let's see an example of how to mutate the weights of a model. Go to [tests/tfv2/model](https://github.com/nniranjhana/Soft-TensorFI/tree/master/tests/tfv2/model) and set the sample.yaml file in [tests/tfv2/model/confFiles](https://github.com/nniranjhana/Soft-TensorFI/tree/master/tests/tfv2/model/confFiles). If you are running from the examples in this directory, this is the file that gets picked up.
 
 5. Run the test to observe the fault injection. For example, let's say we run the simple neural network example:
 
@@ -55,7 +55,7 @@ Following are the installation and usage instructions for a Linux platform.
     The results for this run are:
 
     ```
-    nj@nj-arch-xps:~/workspace/soft-tensorfi/tests/tfv2$ python nn-mnist.py
+    nj@nj-arch-xps:~/Soft-TensorFI/tests/tfv2/model$ python nn-mnist.py
 
     WARNING:root:Limited tf.compat.v2.summary API due to missing TensorBoard installation.
 

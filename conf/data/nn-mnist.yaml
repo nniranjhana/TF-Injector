@@ -1,0 +1,12 @@
+# This is a sample YAML file for fault injection configuration for the NN example.
+# The meaning of labels and their allowed values are explained for your choosing.
+
+# "Type" specifies the type of fault injector to call.
+#  - "shuffle" - Shuffles the data tensor values randomly.
+#  - "repeat"  - Repeats chosen "Amount" percentage of the data tensor values.
+Type: repeat
+
+# "Amount" specifies the amount of injection in "Artifact".
+#  - Do specify a value between 1 and 100.
+#  - When "repeat" type is selected, "Amount" corresponds to the percentage of total values.
+Amount: 10

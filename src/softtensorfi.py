@@ -7,7 +7,7 @@ from struct import pack, unpack
 # tf.disable_v2_behavior()
 
 import numpy as np
-from tensorflow.keras import Model, layers
+from tensorflow.keras import Model, layers, datasets
 import random, math
 from src import config
 
@@ -73,6 +73,33 @@ class inject_model():
 				upd.append(val_)
 		v_ = tf.tensor_scatter_nd_update(v, ind_, upd)
 		v.assign(v_)
+
+	def metamorph(self, model, fiConf):
+		(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+		train_images, test_images = train_images / 255.0, test_images / 255.0
+
+		permute = fiConf["Mutation"]
+
+		color = {
+			'R' : 0,
+			'G' : 1,
+			'B' : 2
+		}
+
+		# Build up the training and testing dataset according to the specified color permutation
+		(train_images_, test_images_) = (train_images[:,:,:,color[permute[0]]:(color[permute[0]]+1)],
+			test_images[:,:,:,color[permute[0]]:(color[permute[0]]+1)])
+		(train_images_, test_images_) = (np.concatenate((train_images_, train_images[:,:,:,color[permute[1]]:(color[permute[1]]+1)]), axis = 3),
+			np.concatenate((test_images_, test_images[:,:,:,color[permute[1]]:(color[permute[1]]+1)]), axis = 3))
+		(train_images_, test_images_) = (np.concatenate((train_images_, train_images[:,:,:,color[permute[2]]:(color[permute[2]]+1)]), axis = 3),
+			np.concatenate((test_images_, test_images[:,:,:,color[permute[2]]:(color[permute[2]]+1)]), axis = 3))
+
+		# Re-train the model with the mutated color dataset
+		model.fit(train_images_, train_labels, epochs=10,
+			validation_data=(test_images_, test_labels))
+
+		test_loss, test_acc = model.evaluate(test_images_,  test_labels, verbose=2)
+		print("Accuracy with the permutated", permute, "dataset:", test_acc)
 
 class inject_data():
 	def __init__(self, x_test, confFile="confFiles/sample.yaml"):

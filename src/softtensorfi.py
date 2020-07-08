@@ -101,29 +101,27 @@ class inject_model():
 		test_loss, test_acc = model.evaluate(test_images_,  test_labels, verbose=2)
 		print("Accuracy with the permutated", permute, "dataset:", test_acc)
 
-class inject_data():
-	def __init__(self, x_test, confFile="confFiles/sample.yaml"):
-		x_test = tf.convert_to_tensor(x_test)
-		fiConf = config.dconfig(confFile)
-		fiFunc = getattr(self, fiConf["Type"])
-		fiFunc(x_test, fiConf)
+def inject_data(x_test, confFile="confFiles/sample.yaml"):
+	fiConf = config.dconfig(confFile)
+	fiFunc = globals()[fiConf["Type"]]
+	return fiFunc(x_test, fiConf)
 
-	def shuffle(self, x_test, fiConf):
-		x_test_ = tf.random.shuffle(x_test)
-		return x_test
+def shuffle(x_test, fiConf):
+	x_test_ = tf.random.shuffle(x_test)
+	return x_test_
 
-	def repeat(self, x_test, fiConf):
-		num = x_test.shape[0]
-		rep_sz = fiConf["Amount"]
-		rep_sz = (rep_sz * num) / 100
-		rep_sz = math.floor(rep_sz)
-		sz = num - rep_sz
-		ind = random.sample(range(num), sz)
-		x_test_ = tf.gather(x_test, ind)
-		upd = random.sample(ind, rep_sz)
-		x_ = tf.gather(x_test, upd)
-		x_test_ = tf.concat([x_test_, x_], 0)
-		return x_test_
+def repeat(x_test, fiConf):
+	num = x_test.shape[0]
+	rep_sz = fiConf["Amount"]
+	rep_sz = (rep_sz * num) / 100
+	rep_sz = math.floor(rep_sz)
+	sz = num - rep_sz
+	ind = random.sample(range(num), sz)
+	x_test_ = tf.gather(x_test, ind)
+	upd = random.sample(ind, rep_sz)
+	x_ = tf.gather(x_test, upd)
+	x_test_ = tf.concat([x_test_, x_], 0)
+	return x_test_
 
 '''
 Outdated TF v1 test code, kept in case we need to support tests in TF v1 in the future

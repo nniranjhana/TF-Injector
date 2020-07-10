@@ -28,7 +28,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Save the untrained weights for future training with modified dataset
-model.save_weights('RGB0.h5')
+model.save_weights('linear0.h5')
 
 model.fit(train_images, train_labels, epochs=10, 
                     validation_data=(test_images, test_labels))
@@ -37,13 +37,24 @@ model.fit(train_images, train_labels, epochs=10,
 model.save('RGB')
 model.save_weights('RGB.h5')
 
+# Load the model and trained weights
 model = tf.keras.models.load_model('RGB')
-
 model.load_weights('RGB.h5')
 
 test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
-print("Accuracy with the original RGB dataset:", test_acc)
+print("Accuracy with the original dataset:", test_acc)
 
-# Load the untrained weights before calling the mutator
+# Load the untrained weights for retraining with permutated dataset
 model.load_weights('RGB0.h5')
-test_images_ = softtensorfi.inject_model(model)
+
+train_images_ = softtensorfi.inject_data(train_images)
+test_images_ = softtensorfi.inject_data(test_images)
+
+test_loss, test_acc = model.evaluate(test_images_,  test_labels, verbose=2)
+print("Accuracy with the modified dataset before training:", test_acc)
+
+model.fit(train_images_, train_labels, epochs=10, 
+                    validation_data=(test_images_, test_labels))
+
+test_loss, test_acc = model.evaluate(test_images_,  test_labels, verbose=2)
+print("Accuracy with the modified dataset after training:", test_acc)

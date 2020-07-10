@@ -74,33 +74,6 @@ class inject_model():
 		v_ = tf.tensor_scatter_nd_update(v, ind_, upd)
 		v.assign(v_)
 
-	def metamorph(self, model, fiConf):
-		(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
-		train_images, test_images = train_images / 255.0, test_images / 255.0
-
-		permute = fiConf["Mutation"]
-
-		color = {
-			'R' : 0,
-			'G' : 1,
-			'B' : 2
-		}
-
-		# Build up the training and testing dataset according to the specified color permutation
-		(train_images_, test_images_) = (train_images[:,:,:,color[permute[0]]:(color[permute[0]]+1)],
-			test_images[:,:,:,color[permute[0]]:(color[permute[0]]+1)])
-		(train_images_, test_images_) = (np.concatenate((train_images_, train_images[:,:,:,color[permute[1]]:(color[permute[1]]+1)]), axis = 3),
-			np.concatenate((test_images_, test_images[:,:,:,color[permute[1]]:(color[permute[1]]+1)]), axis = 3))
-		(train_images_, test_images_) = (np.concatenate((train_images_, train_images[:,:,:,color[permute[2]]:(color[permute[2]]+1)]), axis = 3),
-			np.concatenate((test_images_, test_images[:,:,:,color[permute[2]]:(color[permute[2]]+1)]), axis = 3))
-
-		# Re-train the model with the mutated color dataset
-		model.fit(train_images_, train_labels, epochs=10,
-			validation_data=(test_images_, test_labels))
-
-		test_loss, test_acc = model.evaluate(test_images_,  test_labels, verbose=2)
-		print("Accuracy with the permutated", permute, "dataset:", test_acc)
-
 def inject_data(x_test, confFile="confFiles/sample.yaml"):
 	fiConf = config.dconfig(confFile)
 	fiFunc = globals()[fiConf["Type"]]
@@ -121,6 +94,46 @@ def repeat(x_test, fiConf):
 	upd = random.sample(ind, rep_sz)
 	x_ = tf.gather(x_test, upd)
 	x_test_ = tf.concat([x_test_, x_], 0)
+	return x_test_
+
+def metamorph_color(x_test, fiConf):
+	'''
+	MR applicability: Permutation of input channels applies only to certain RGB datasets
+	'''
+
+	permute = fiConf["Mutation"]
+
+	color = {
+		'R' : 0,
+		'G' : 1,
+		'B' : 2
+	}
+
+	# Build up the dataset according to the specified color permutation
+	x_test_ = x_test[:,:,:,color[permute[0]]:(color[permute[0]]+1)]
+	x_test_ = np.concatenate((x_test_, x_test[:,:,:,color[permute[1]]:(color[permute[1]]+1)]), axis = 3)
+	x_test_ = np.concatenate((x_test_, x_test[:,:,:,color[permute[2]]:(color[permute[2]]+1)]), axis = 3)
+
+	return x_test_
+
+def metamorph_constant(x_test, fiConf):
+	'''
+	MR applicability: Shift of train and test features by a constant applies only for RBF kernel
+	'''
+
+	b = float(fiConf["Mutation"])
+	x_test_ = x_test + b
+	return x_test_
+
+def metamorph_linear(x_test, fiConf):
+	'''
+	MR applicability: Linear scaling of test features applies only for linear kernel
+	'''
+
+	linear = float(fiConf["Mutation"])
+	W, b = linear.replace(' ', '').split(',')
+	W, b = float(W), float(b)
+	x_test_ = x_test*W + b
 	return x_test_
 
 '''

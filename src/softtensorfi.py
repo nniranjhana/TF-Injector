@@ -96,6 +96,16 @@ def repeat(x_test, fiConf):
 	x_test_ = tf.concat([x_test_, x_], 0)
 	return x_test_
 
+def remove(x_test, fiConf):
+	num = x_test.shape[0]
+	rem_sz = fiConf["Amount"]
+	rem_sz = (rem_sz * num) / 100
+	rem_sz = math.floor(rem_sz)
+	sz = num - rem_sz
+	ind = random.sample(range(num), sz)
+	x_test_ = tf.gather(x_test, ind)
+	return x_test_
+
 def metamorph_color(x_test, fiConf):
 	'''
 	MR applicability: Permutation of input channels applies only to certain RGB datasets

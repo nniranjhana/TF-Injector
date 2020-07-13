@@ -74,37 +74,40 @@ class inject_model():
 		v_ = tf.tensor_scatter_nd_update(v, ind_, upd)
 		v.assign(v_)
 
-def inject_data(x_test, confFile="confFiles/sample.yaml"):
+def inject_data(x_test, y_test, confFile="confFiles/sample.yaml"):
 	fiConf = config.dconfig(confFile)
 	fiFunc = globals()[fiConf["Type"]]
-	return fiFunc(x_test, fiConf)
+	return fiFunc(x_test, y_test, fiConf)
 
-def shuffle(x_test, fiConf):
-	x_test_ = tf.random.shuffle(x_test)
-	return x_test_
+def shuffle(x_test, y_test, fiConf):
+	num = x_test.shape[0]
+	ind = tf.range(0, num)
+	ind_ = tf.random.shuffle(ind)
+	x_test_, y_test_ = tf.gather(x_test, ind_), tf.gather(y_test, ind_)
+	return (x_test_, y_test_)
 
-def repeat(x_test, fiConf):
+def repeat(x_test, y_test, fiConf):
 	num = x_test.shape[0]
 	rep_sz = fiConf["Amount"]
 	rep_sz = (rep_sz * num) / 100
 	rep_sz = math.floor(rep_sz)
 	sz = num - rep_sz
 	ind = random.sample(range(num), sz)
-	x_test_ = tf.gather(x_test, ind)
+	x_test_, y_test_ = tf.gather(x_test, ind), tf.gather(y_test, ind)
 	upd = random.sample(ind, rep_sz)
-	x_ = tf.gather(x_test, upd)
-	x_test_ = tf.concat([x_test_, x_], 0)
-	return x_test_
+	x_, y_ = tf.gather(x_test, upd), tf.gather(y_test, upd)
+	x_test_, y_test_ = tf.concat([x_test_, x_], 0), tf.concat([y_test_, y_], 0)
+	return (x_test_, y_test_)
 
-def remove(x_test, fiConf):
+def remove(x_test, y_test, fiConf):
 	num = x_test.shape[0]
 	rem_sz = fiConf["Amount"]
 	rem_sz = (rem_sz * num) / 100
 	rem_sz = math.floor(rem_sz)
 	sz = num - rem_sz
 	ind = random.sample(range(num), sz)
-	x_test_ = tf.gather(x_test, ind)
-	return x_test_
+	x_test_, y_test_ = tf.gather(x_test, ind), tf.gather(y_test, ind)
+	return (x_test_, y_test_)
 
 def metamorph_color(x_test, fiConf):
 	'''

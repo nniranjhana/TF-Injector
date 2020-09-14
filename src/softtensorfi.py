@@ -109,6 +109,22 @@ def remove(x_test, y_test, fiConf):
 	x_test_, y_test_ = tf.gather(x_test, ind), tf.gather(y_test, ind)
 	return (x_test_, y_test_)
 
+def inject_data(xy_test, confFile="confFiles/sample.yaml"):
+	fiConf = config.dconfig(confFile)
+	fiFunc = globals()[fiConf["Type"]]
+	return fiFunc(xy_test, fiConf)
+
+def label_err(y_test, fiConf):
+	num = y_test.shape[0]
+	err_sz = fiConf["Amount"]
+	err_sz = (err_sz * num) / 100
+	err_sz = math.floor(err_sz)
+	ind = random.sample(range(num), err_sz)
+	for item in ind:
+		r = list(range(0, y_test[item][0])) + list(range(y_test[item][0] + 1, 10))
+		y_test[item] = random.choice(r)
+	return y_test
+
 def metamorph_color(x_test, fiConf):
 	'''
 	MR applicability: Permutation of input channels applies only to certain RGB datasets

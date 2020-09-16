@@ -141,6 +141,31 @@ def label_err(y_test, fiConf):
 		y_test[item] = random.choice(r)
 	return y_test
 
+def inject_data(x_name, x_test, y_test, confFile="confFiles/sample.yaml"):
+	fiConf = config.dconfig(confFile)
+	fiFunc = globals()[fiConf["Type"]]
+	return fiFunc(x_name, x_test, y_test, fiConf)	
+
+def class_add(x_name, x_test, y_test, fiConf):
+	import tensorflow_datasets as tfds
+	ds = tfds.load(x_name, split='train', shuffle_files=True)
+	for dp in ds.take(1):
+		dl = list(dp.keys())
+		elem_shape = dp["image"].shape
+	if(elem_shape != x_test.shape[1:]):
+		raise AssertionError("Datasets' input shapes don't match")
+	add_sz = fiConf["Amount"]
+	upd = ds.take(add_sz)
+	x_test_, y_test_ = [], []
+	for item in tfds.as_numpy(upd):
+		x_test_.append(item["image"])
+	x_test = np.append(x_test, x_test_, axis = 0)
+	ind = random.sample(range(y_test.shape[0]), add_sz)
+	for i in ind:
+		y_test_.append(y_test[i])
+	y_test = np.append(y_test, y_test_, axis = 0)
+	return x_test, y_test
+
 def metamorph_color(x_test, fiConf):
 	'''
 	MR applicability: Permutation of input channels applies only to certain RGB datasets

@@ -114,6 +114,22 @@ def inject_data(xy_test, confFile="confFiles/sample.yaml"):
 	fiFunc = globals()[fiConf["Type"]]
 	return fiFunc(xy_test, fiConf)
 
+def noise_add(x_test, fiConf):
+	num = x_test.size # Total elements from all datapoints
+	sz = len(x_test) # Number of datapoints
+	elem_shape = x_test.shape[1:] # Extract each element's shape as a tuple for reshape later
+	add_sz = num//sz # Number of elements in each datapoint
+	err_sz = fiConf["Amount"]
+	err_sz = (err_sz * sz) / 100 # Number of datapoints to add noise to
+	err_sz = math.floor(err_sz)
+	ind = random.sample(range(sz), err_sz)
+	for item in ind:
+		upd = np.random.standard_normal(add_sz)
+		x_test_ = x_test[item].flatten()
+		x_test_ = x_test_ + upd
+		x_test[item] = x_test_.reshape(elem_shape)
+	return x_test
+
 def label_err(y_test, fiConf):
 	num = y_test.shape[0]
 	err_sz = fiConf["Amount"]

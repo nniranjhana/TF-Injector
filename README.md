@@ -1,7 +1,14 @@
-# Soft-TensorFI: A software fault injection framework for TensorFlow applications
+<h1 align="center"> 
+  <img src="https://user-images.githubusercontent.com/29974283/100801172-78f3d700-33dc-11eb-8756-375ddbd740ca.png" height="150">
+  <br/>
+    TF-Injector
+  </br>
+</h1>
 
-Soft-TensorFI is a software fault injector for TensorFlow v2 applications written in Python.
-The software fault configuration and injection are determined by the faults that can be emulated at different levels.
+<h2 align="center">A Versatile Fault Injector for ML Applications</h2>
+
+TF-Injector is a software fault injector for TensorFlow v2 applications written in Python 3.
+A variety of faults are supported at the data, hardware and software levels.
 
 ### 1. Dependencies
 
@@ -20,20 +27,20 @@ Following are the installation and usage instructions for a Linux platform.
 1. Clone the repository.
 
     ```
-    git clone https://github.com/nniranjhana/Soft-TensorFI.git
+    git clone https://github.com/nniranjhana/TF-Injector.git
     ```
 
-2. Set the python path for the Soft-TensorFI project so that it can be executed from other scripts. You can also add it permanently to .bashrc if you prefer.
+2. Set the python path for the TF-Injector project so that it can be executed from other scripts. You can also add it permanently to .bashrc if you prefer.
 
     ```
-    export PYTHONPATH=$PYTHONPATH:$SOFT-TENSORFIHOMEPATH
+    export PYTHONPATH=$PYTHONPATH:$TF-INJECTORHOMEPATH
     ```
 
-	where `$SOFT-TENSORFIHOMEPATH` might be like `/home/nj/Soft-TensorFI`
+	where `$TF-INJECTORHOMEPATH` might be like `/home/nj/TF-Injector`
 
-3. You can navigate to [conf/](https://github.com/nniranjhana/Soft-TensorFI/tree/master/conf) to check out how to set the fault injection configuration for the tests you plan to run.
+3. You can navigate to [conf/](https://github.com/nniranjhana/TF-Injector/tree/master/conf) to check out how to set the fault injection configuration for the tests you plan to run.
 
-4. Let's see an example of how to mutate the weights of a model. Go to [tests/tfv2/model](https://github.com/nniranjhana/Soft-TensorFI/tree/master/tests/tfv2/model) and set the sample.yaml file in [tests/tfv2/model/confFiles](https://github.com/nniranjhana/Soft-TensorFI/tree/master/tests/tfv2/model/confFiles). If you are running from the examples in this directory, this is the file that gets picked up.
+4. Let's see an example of how to mutate the weights of a model. Go to [tests/tfv2/model](https://github.com/nniranjhana/TF-Injector/tree/master/tests/tfv2/model) and set the sample.yaml file in [tests/tfv2/model/confFiles](https://github.com/nniranjhana/TF-Injector/tree/master/tests/tfv2/model/confFiles). If you are running from the examples in this directory, this is the file that gets picked up.
 
 5. Run the test to observe the fault injection. For example, let's say we run the simple neural network example:
 
@@ -55,7 +62,7 @@ Following are the installation and usage instructions for a Linux platform.
     The results for this run are:
 
     ```
-    nj@nj-arch-xps:~/Soft-TensorFI/tests/tfv2/model$ python nn-mnist.py
+    nj@nj-arch-xps:~/TF-Injector/tests/tfv2/model$ python nn-mnist.py
 
     WARNING:root:Limited tf.compat.v2.summary API due to missing TensorBoard installation.
 

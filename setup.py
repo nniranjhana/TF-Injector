@@ -15,7 +15,6 @@ setup(
     packages=['src'],
     install_requires=[
         'PyYAML>=5.4.1',
-        'tensorflow>=2.4.1'
     ],
     long_description=long_description,
     classifiers=[

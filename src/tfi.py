@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import re
 
 import tensorflow as tf
 from struct import pack, unpack
@@ -8,8 +9,12 @@ from tensorflow.keras import Model, layers, datasets
 import random, math
 from src import config
 
+
 def inject(confFile="confFiles/sample.yaml", **kwargs):
-	fiConf = config.config(confFile)
+	if kwargs.get('fiConf'):
+		fiConf = kwargs.pop('fiConf')
+	else:
+		fiConf = config.config(confFile)
 	fiFunc = globals()[fiConf["Type"]]
 	return fiFunc(fiConf, **kwargs)
 
@@ -55,15 +60,19 @@ def mutate(fiConf, **kwargs):
 	v_ = tf.identity(v)
 	v_ = tf.keras.backend.flatten(v_)
 	v_ = tf.unstack(v_)
-	if(fiConf["Bit"]=='N'):
-		for item in ind:
-			val = v_[item]
+	regex = re.compile('(\d+)-(\d+)')
+
+	for item in ind:
+		val = v_[item]
+		if(fiConf["Bit"]=='N'):
 			pos = random.randint(0, 31)
-			val_ = bitflip(val, pos)
-			v_[item] = val_
-		v_ = tf.stack(v_)
-		v_ = tf.reshape(v_, elem_shape)
-		v.assign(v_)
+		else:
+			pos = random.randint(*map(int, regex.match(fiConf['Bit']).groups()))
+		val_ = bitflip(val, pos)
+		v_[item] = val_
+	v_ = tf.stack(v_)
+	v_ = tf.reshape(v_, elem_shape)
+	v.assign(v_)
 
 def shuffle(fiConf, **kwargs):
 	x_test = kwargs["x_test"]
